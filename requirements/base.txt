@@ -10,3 +10,7 @@ django-modeltranslation
 django-redis
 celery
 redis
+django-phonenumber-field
+phonenumbers
+django-ckeditor-5
+djangorestframework_simplejwt
