@@ -28,6 +28,9 @@ class CourseChoice(models.IntegerChoices):
 class Faculty(BaseModel):
     name = models.CharField(max_length=100, unique=True)
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name = 'Fakultet'
         verbose_name_plural = 'Fakultetlar'
@@ -74,7 +77,7 @@ class Group(BaseModel):
     name = models.CharField(max_length=150)
     direction = models.ForeignKey(Direction, on_delete=models.SET_NULL, null=True)
     type = models.IntegerField(choices=StudentType.choices, default=StudentType.BACHELOR)
-    file_type = models.IntegerField(choices=CourseChoice.choices, default=CourseChoice.FIRST)
+    course = models.IntegerField(choices=CourseChoice.choices, default=CourseChoice.FIRST)
 
     def __str__(self):
         return f"{self.name}"
@@ -87,6 +90,11 @@ class Group(BaseModel):
 class StudentGroup(BaseModel):
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
     student = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        verbose_name = "Talaba guruhi"
+        verbose_name_plural = "Talaba guruhlari"
+        unique_together = ("group", "student")
 
 
 class Subject(BaseModel):
@@ -124,6 +132,12 @@ class Semester(BaseModel):
     total = models.IntegerField("Jami soat", default=0)
     credit = models.IntegerField("Kredit", default=0)
     academic_year = models.ForeignKey(AcademicYear, on_delete=models.SET_NULL, null=True)
+    is_finished = models.BooleanField("Tugatildi", default=False)
+
+    class Meta:
+        ordering = ("semester", "group")
+        verbose_name = "Semestr"
+        verbose_name_plural = "Semestrlar"
 
 
 class LessonType(models.IntegerChoices):
@@ -141,6 +155,14 @@ class Lesson(BaseModel):
     order = models.IntegerField("Tartib raqami", default=1)
     quiz_duration = models.DurationField("Test davomiyligi", default=timedelta(seconds=3600), null=True)
 
+    class Meta:
+        ordering = ("order",)
+        verbose_name = "Dars"
+        verbose_name_plural = "Darslar"
+
+    def __str__(self):
+        return self.title
+
 
 class LessonMaterialType(models.IntegerChoices):
     PRESENTATION = 1, "Taqdimot"
@@ -155,14 +177,26 @@ class LessonMaterial(BaseModel):
     file = models.FileField(upload_to='lesson_materials/')
     description = models.CharField("Tavsif", max_length=255, blank=True, null=True)
 
+    class Meta:
+        verbose_name = "Dars materiali"
+        verbose_name_plural = "Dars materiallari"
+
 
 class LessonQuiz(BaseModel):
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="tests")
+
+    class Meta:
+        verbose_name = "Dars testi"
+        verbose_name_plural = "Dars testlari"
 
 
 class LessonQuizQuestion(BaseModel):
     quiz = models.ForeignKey(LessonQuiz, on_delete=models.CASCADE, related_name="questions")
     question = CKEditor5Field("Savol", null=True)
+
+    class Meta:
+        verbose_name = "Test savoli"
+        verbose_name_plural = "Test savollari"
 
 
 class AnswerChoice(models.TextChoices):
@@ -177,6 +211,10 @@ class LessonQuizQuestionAnswer(BaseModel):
     answer = CKEditor5Field("Javob", null=True)
     is_correct = models.BooleanField("To'g'ri javob", default=False)
     choice = models.CharField(max_length=1, choices=AnswerChoice.choices, verbose_name="Javob varianti", null=True)
+
+    class Meta:
+        verbose_name = "Savol javobi"
+        verbose_name_plural = "Savol javoblari"
 
 
 class QuizStatus(models.IntegerChoices):
@@ -195,6 +233,11 @@ class StudentLessonQuiz(BaseModel):
     started_at = models.DateTimeField("Boshlangan vaqti", null=True)
     finished_at = models.DateTimeField("Tugatgan vaqti", null=True)
 
+    class Meta:
+        verbose_name = "Talaba testi"
+        verbose_name_plural = "Talaba testlari"
+        unique_together = ("quiz", "student")
+
 
 class StudentLessonQuizAnswer(BaseModel):
     student_quiz = models.ForeignKey(StudentLessonQuiz, on_delete=models.CASCADE, related_name="student_answers")
@@ -202,3 +245,7 @@ class StudentLessonQuizAnswer(BaseModel):
     answer = models.ForeignKey(LessonQuizQuestionAnswer, on_delete=models.SET_NULL, null=True)
     is_correct = models.BooleanField("To'g'ri javob", default=False)
     is_skip = models.BooleanField("O'tkazib yuborilganmi?", default=False)
+
+    class Meta:
+        verbose_name = "Talaba javobi"
+        verbose_name_plural = "Talaba javoblari"

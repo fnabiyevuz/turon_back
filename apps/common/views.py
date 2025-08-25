@@ -8,7 +8,6 @@ from apps.common.models import Region, District, Neighborhood, Media
 class RegionListView(ListAPIView):
     queryset = Region.objects.all()
     serializer_class = com_ser.RegionListSerializer
-    filterset_fields = ("country",)
     search_fields = ('name',)
     ordering_fields = '__all__'
 
