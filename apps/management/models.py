@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 
@@ -153,7 +151,7 @@ class Lesson(BaseModel):
     lesson_type = models.IntegerField(choices=LessonType.choices, default=LessonType.LECTURE)
     title = models.CharField("Mavzu", max_length=255)
     order = models.IntegerField("Tartib raqami", default=1)
-    quiz_duration = models.DurationField("Test davomiyligi", default=timedelta(seconds=3600), null=True)
+    quiz_duration = models.DurationField("Test davomiyligi", null=True)
 
     class Meta:
         ordering = ("order",)

@@ -10,18 +10,18 @@ class TrackUserActivityMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        print("TrackUserActivityMiddleware called")
+
         if request.user.is_authenticated:
             current_time = now()
             last_activity = request.session.get("last_activity")
-            print(request.user, last_activity)
+
             if last_activity:
                 try:
                     last_activity = datetime.datetime.fromisoformat(last_activity)
                     delta = current_time - last_activity
 
-                    # 30 minutdan oshmagan bo‘lsa aktiv vaqt deb hisoblaymiz
-                    if delta.total_seconds() < 1800:
+                    # Faqat 0 < delta < 30 minut bo‘lsa qo‘shamiz
+                    if timedelta(seconds=0) < delta < timedelta(minutes=30):
                         activity, _ = UserActivity.objects.get_or_create(
                             user=request.user,
                             date=current_time.date(),
@@ -34,6 +34,5 @@ class TrackUserActivityMiddleware:
 
             # keyingi request uchun saqlab qo‘yish
             request.session["last_activity"] = current_time.isoformat()
-            last_activity2 = request.session.get("last_activity")
-            print(request.user, last_activity2)
+            print(request.user, request.session["last_activity"])
         return response
