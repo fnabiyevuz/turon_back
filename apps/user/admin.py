@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, UserDevice
+from .models import User, UserDevice, UserActivity
 
 
 @admin.register(User)
@@ -32,3 +32,10 @@ class UserDeviceAdmin(admin.ModelAdmin):
     list_display = ("user", "device_name", "ip_address", "last_activity")
     search_fields = ("user__username", "device_name", "ip_address")
     list_filter = ("last_activity",)
+
+
+@admin.register(UserActivity)
+class UserActivityAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "active_time")
+    list_filter = ("date", "user")
+    search_fields = ("user__username", "user__first_name", "user__last_name")

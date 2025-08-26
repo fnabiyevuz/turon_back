@@ -1,4 +1,5 @@
 import uuid
+from datetime import timedelta
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
@@ -46,3 +47,16 @@ class UserDevice(BaseModel):
 
     def __str__(self):
         return f"{self.user} - {self.device_name}"
+
+class UserActivity(models.Model):
+    user = models.ForeignKey("user.User", on_delete=models.CASCADE)
+    date = models.DateField()
+    active_time = models.DurationField(default=timedelta(seconds=0))
+
+    class Meta:
+        unique_together = ("user", "date")  # bir kunda 1 ta yozuv
+        verbose_name = "User Activity"
+        verbose_name_plural = "User Activities"
+
+    def __str__(self):
+        return f"{self.user} - {self.date} ({self.active_time}s)"

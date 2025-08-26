@@ -6,26 +6,23 @@ from apps.common.models import Region, District, Neighborhood, Media
 
 
 class RegionListView(ListAPIView):
-    queryset = Region.objects.all()
+    queryset = Region.objects.all().order_by('name')
     serializer_class = com_ser.RegionListSerializer
     search_fields = ('name',)
-    ordering_fields = '__all__'
 
 
 class DistrictListView(ListAPIView):
-    queryset = District.objects.all()
+    queryset = District.objects.all().order_by('name')
     serializer_class = com_ser.DistrictListSerializer
     filterset_fields = ("region",)
     search_fields = ('name',)
-    ordering_fields = '__all__'
 
 
 class NeighborhoodListView(ListAPIView):
-    queryset = Neighborhood.objects.all()
+    queryset = Neighborhood.objects.all().order_by('name')
     serializer_class = com_ser.NeighborhoodListSerializer
     filterset_fields = ("district",)
     search_fields = ('name',)
-    ordering_fields = '__all__'
 
 
 class MediaCreateAPIView(CreateAPIView):
