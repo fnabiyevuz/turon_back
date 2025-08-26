@@ -178,4 +178,9 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API documentation for Turon LMS',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'ENUM_NAME_OVERRIDES': {
+        "apps.management.models.Direction.type": "DirectionTypeEnum",
+        "apps.management.models.Group.type": "GroupTypeEnum",
+        "apps.management.models.Subject.type": "SubjectTypeEnum",
+    }
 }
