@@ -14,7 +14,6 @@ class TrackUserActivityMiddleware:
         if request.user.is_authenticated:
             current_time = now()
             last_activity = request.session.get("last_activity")
-
             if last_activity:
                 try:
                     last_activity = datetime.datetime.fromisoformat(last_activity)
@@ -34,5 +33,4 @@ class TrackUserActivityMiddleware:
 
             # keyingi request uchun saqlab qo‘yish
             request.session["last_activity"] = current_time.isoformat()
-            print(request.user, request.session["last_activity"])
         return response

@@ -1,4 +1,5 @@
 from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -67,6 +68,7 @@ class LessonMaterialViewSet(ModelViewSet):
     permission_classes = (IsTeacher,)
     filterset_fields = ("lesson", "type")
     search_fields = ("description",)
+    # parser_classes = (MultiPartParser, FormParser)
 
     def get_queryset(self):
-        return self.queryset.filter(lesson__semester__teacher=self.request.user)
+        return self.queryset.filter(lesson__semester__teacher=self.request.user).order_by('id')
