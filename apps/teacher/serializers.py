@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from apps.management.models import Semester, Group, Lesson, LessonMaterial, Direction
+from apps.management.models import Semester, Group, Lesson, LessonMaterial, Direction, SemesterSubject
+from apps.user.models import User
+
+
+class UserMiniSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('uuid', 'first_name', 'last_name')
 
 
 class DirectionSerializer(serializers.ModelSerializer):
@@ -20,6 +27,12 @@ class GroupSerializer(serializers.ModelSerializer):
 class SemesterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Semester
+        fields = '__all__'
+
+
+class SemesterSubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SemesterSubject
         fields = '__all__'
 
 

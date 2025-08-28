@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (
     AcademicYear, Faculty, Department, Direction, Group, StudentGroup,
     Subject, Semester, Lesson, LessonMaterial, LessonQuiz, LessonQuizQuestion,
-    LessonQuizQuestionAnswer, StudentLessonQuiz, StudentLessonQuizAnswer
+    LessonQuizQuestionAnswer, StudentLessonQuiz, StudentLessonQuizAnswer, SemesterSubject
 )
 
 
@@ -57,16 +57,21 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Semester)
 class SemesterAdmin(admin.ModelAdmin):
-    list_display = ("semester", "group", "subject", "teacher", "academic_year", "credit")
-    list_filter = ("semester", "academic_year", "group", "subject")
-    search_fields = ("group__name", "subject__title", "teacher__username")
+    list_display = ("order", "group", "academic_year", "is_finished")
+    list_filter = ("order", "group", "academic_year", "is_finished")
+
+
+@admin.register(SemesterSubject)
+class SemesterSubjectAdmin(admin.ModelAdmin):
+    list_display = ("semester", "subject", "teacher", "lesson", "practice", "self_work", "total")
+    list_filter = ("semester", "subject", "teacher",)
 
 
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ("title", "semester", "lesson_type", "order", "quiz_duration")
-    list_filter = ("lesson_type", "semester")
-    search_fields = ("title", "semester__group__name")
+    list_display = ("title", "semester_subject", "lesson_type", "order", "quiz_duration")
+    list_filter = ("lesson_type", "semester_subject")
+    search_fields = ("title",)
 
 
 @admin.register(LessonMaterial)

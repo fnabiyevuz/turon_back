@@ -1,11 +1,11 @@
 from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from apps.management.models import Semester, Lesson, LessonMaterial, Group
+from apps.management.models import Semester, Lesson, LessonMaterial, Group, SemesterSubject
 from apps.teacher.serializers import LessonMaterialSerializer, \
-    LessonSerializer, GroupSerializer, SemesterSerializer
+    LessonSerializer, GroupSerializer, SemesterSerializer, SemesterSubjectSerializer, UserMiniSerializer
+from apps.user.models import User
 from apps.user.permissions import IsTeacher
 
 
@@ -16,7 +16,8 @@ class GroupViewSet(ModelViewSet):
     def get_queryset(self):
         teacher = self.request.user
         group_ids = (
-            Semester.objects.filter(teacher=teacher)
+            Semester.objects
+            .filter(semestersubject__teacher=teacher)
             .values_list('group_id', flat=True)
             .distinct()
         )
@@ -25,37 +26,49 @@ class GroupViewSet(ModelViewSet):
     @action(detail=True, methods=["get"])
     def students(self, request, pk=None):
         group = self.get_object()
-        queryset = (
-            group.studentgroup_set
-            .select_related("student")
-            .values("student__uuid", "student__first_name", "student__last_name")
-        )
+        queryset = User.objects.filter(studentgroup__group=group)
 
-        # Pagination qo‘llash
         page = self.paginate_queryset(queryset)
         if page is not None:
-            return self.get_paginated_response(page)
+            serializer = UserMiniSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-        return Response(queryset)
+        serializer = UserMiniSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class SemesterViewSet(ModelViewSet):
     queryset = Semester.objects.all()
     serializer_class = SemesterSerializer
     permission_classes = (IsTeacher,)
-    filterset_fields = ("semester", "group", "subject", "teacher", "academic_year")
-
-    # search_fields = ("title",)
+    filterset_fields = ("order", "group", "academic_year", "is_finished",)
 
     def get_queryset(self):
-        return self.queryset.filter(teacher=self.request.user)
+        user = self.request.user
+
+        return (
+            self.queryset
+            .filter(semestersubject__teacher=user)
+            .distinct()
+        )
+
+
+class SemesterSubjectViewSet(ModelViewSet):
+    queryset = SemesterSubject.objects.all()
+    serializer_class = SemesterSubjectSerializer
+    permission_classes = (IsTeacher,)
+    filterset_fields = ("semester", "subject", "teacher",)
+
+    def get_queryset(self):
+        user = self.request.user
+        return self.queryset.filter(teacher=user)
 
 
 class LessonViewSet(ModelViewSet):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = (IsTeacher,)
-    filterset_fields = ("semester", "lesson_type")
+    filterset_fields = ("semester_subject", "lesson_type")
     search_fields = ("title",)
 
     def get_queryset(self):
@@ -68,6 +81,7 @@ class LessonMaterialViewSet(ModelViewSet):
     permission_classes = (IsTeacher,)
     filterset_fields = ("lesson", "type")
     search_fields = ("description",)
+
     # parser_classes = (MultiPartParser, FormParser)
 
     def get_queryset(self):

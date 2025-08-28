@@ -120,8 +120,22 @@ class SemesterChoice(models.IntegerChoices):
 
 
 class Semester(BaseModel):
-    semester = models.IntegerField(choices=SemesterChoice.choices, default=SemesterChoice.SEMESTER_1)
+    order = models.IntegerField(choices=SemesterChoice.choices, default=SemesterChoice.SEMESTER_1)
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True)
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.SET_NULL, null=True)
+    is_finished = models.BooleanField("Tugatildi", default=False)
+
+    def __str__(self):
+        return f"{self.group.name} - {self.get_order_display()} ({self.academic_year.year})"
+
+    class Meta:
+        ordering = ("order",)
+        verbose_name = "Semestr"
+        verbose_name_plural = "Semestrlar"
+
+
+class SemesterSubject(BaseModel):
+    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     teacher = models.ForeignKey('user.User', on_delete=models.SET_NULL, null=True)
     lesson = models.IntegerField("Dars soati", default=0)
@@ -129,13 +143,14 @@ class Semester(BaseModel):
     self_work = models.IntegerField("Mustaqil ish soati", default=0)
     total = models.IntegerField("Jami soat", default=0)
     credit = models.IntegerField("Kredit", default=0)
-    academic_year = models.ForeignKey(AcademicYear, on_delete=models.SET_NULL, null=True)
-    is_finished = models.BooleanField("Tugatildi", default=False)
+
+    def __str__(self):
+        return f"{self.subject.title} - {self.semester.group.name} ({self.semester.get_order_display()})"
 
     class Meta:
-        ordering = ("semester", "group")
-        verbose_name = "Semestr"
-        verbose_name_plural = "Semestrlar"
+        ordering = ("semester__order",)
+        verbose_name = "Semestr fani"
+        verbose_name_plural = "Semestr fanlari"
 
 
 class LessonType(models.IntegerChoices):
@@ -147,7 +162,7 @@ class LessonType(models.IntegerChoices):
 
 
 class Lesson(BaseModel):
-    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, related_name="lessons")
+    semester_subject = models.ForeignKey(SemesterSubject, on_delete=models.SET_NULL, null=True, related_name="lessons")
     lesson_type = models.IntegerField(choices=LessonType.choices, default=LessonType.LECTURE)
     title = models.CharField("Mavzu", max_length=255)
     order = models.IntegerField("Tartib raqami", default=1)
