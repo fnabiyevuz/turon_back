@@ -167,6 +167,7 @@ class Lesson(BaseModel):
     title = models.CharField("Mavzu", max_length=255)
     order = models.IntegerField("Tartib raqami", default=1)
     quiz_duration = models.DurationField("Test davomiyligi", null=True)
+    is_locked = models.BooleanField(default=True)
 
     class Meta:
         ordering = ("order",)

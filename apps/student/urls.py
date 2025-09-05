@@ -1,11 +1,11 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from apps.teacher.views import LessonViewSet, LessonMaterialViewSet,  SemesterViewSet, GroupViewSet
+from django.urls import path
 
-router = DefaultRouter()
-router.register(r'semester', SemesterViewSet, basename='semester')
+from apps.student.views import SemesterAPIView, SemesterSubjectListAPIView, LessonListAPIView, LessonMaterialListAPIView
 
 urlpatterns = [
-    # path('group/', GroupAPIView.as_view(), name='group-list'),
-    path('', include(router.urls)),
+    path('semesters/', SemesterAPIView.as_view()),
+    path('subjects/', SemesterSubjectListAPIView.as_view()),
+    path('lessons/', LessonListAPIView.as_view()),
+    path('lessons/', LessonListAPIView.as_view()),
+    path('lesson-materials/', LessonMaterialListAPIView.as_view()),
 ]

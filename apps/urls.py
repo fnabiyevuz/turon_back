@@ -5,6 +5,7 @@ urlpatterns = [
     path('common/', include('apps.common.urls'), name='common'),
     path('user/', include('apps.user.urls'), name='user'),
     path('teacher/', include('apps.teacher.urls'), name='teacher'),
+    path('student/', include('apps.student.urls'), name='student'),
     # path('management/', include('apps.management.urls'), name='management'),
     # path('center/', include('apps.center.urls'), name='center'),
 ]

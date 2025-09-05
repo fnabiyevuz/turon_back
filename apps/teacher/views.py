@@ -72,7 +72,7 @@ class LessonViewSet(ModelViewSet):
     search_fields = ("title",)
 
     def get_queryset(self):
-        return self.queryset.filter(semester__teacher=self.request.user)
+        return self.queryset.filter(semester_subject__teacher=self.request.user)
 
 
 class LessonMaterialViewSet(ModelViewSet):
