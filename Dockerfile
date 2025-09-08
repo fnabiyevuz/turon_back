@@ -1,19 +1,19 @@
-# Base image
+# Base
 FROM python:3.11-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
+# Env
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
-# Workdir
 WORKDIR /app
 
 # System dependencies
-RUN apt-get update && apt-get install -y \
-    gcc libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
 
-# Python deps
+# Python deps (cache friendly)
 COPY requirements/ ./requirements/
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements/production.txt
 
