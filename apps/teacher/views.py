@@ -85,4 +85,4 @@ class LessonMaterialViewSet(ModelViewSet):
     # parser_classes = (MultiPartParser, FormParser)
 
     def get_queryset(self):
-        return self.queryset.filter(lesson__semester__teacher=self.request.user).order_by('id')
+        return self.queryset.filter(lesson__semester_subject__teacher=self.request.user).order_by('id')
