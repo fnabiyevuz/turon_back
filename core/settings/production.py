@@ -15,7 +15,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 CSRF_COOKIE_SECURE = True
 CSRF_TRUSTED_ORIGINS = [
-    "https://mt.qabul-tuab.uz/",
+    "https://mt.qabul-tuab.uz",
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5174",
@@ -30,7 +30,7 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_HEADERS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://mt.qabul-tuab.uz/",
+    "https://mt.qabul-tuab.uz",
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5174",
