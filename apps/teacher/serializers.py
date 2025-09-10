@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from apps.management.models import Semester, Group, Lesson, LessonMaterial, Direction, SemesterSubject
+from apps.management.models import Semester, Group, Lesson, LessonMaterial, Direction, SemesterSubject, Subject
 from apps.user.models import User
 
 
@@ -30,7 +30,15 @@ class SemesterSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = '__all__'
+
+
 class SemesterSubjectSerializer(serializers.ModelSerializer):
+    subject = SubjectSerializer()
+
     class Meta:
         model = SemesterSubject
         fields = '__all__'
